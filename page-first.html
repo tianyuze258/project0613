@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function sum(a, b) {
+            return a + b;
+        }
+        let p1 = new Proxy(sum, {
+            apply: function (target, thisArg, argumentsList) {
+                return argumentsList[0] + argumentsList[1] * 100;
+            }
+        });
+        // 正常调用
+        console.log(sum(1, 2)); // 3
+        // 代理之后调用
+        console.log(p1(1, 2)); // 201 
+        var p = new Proxy(function () { }, {
+            apply: function (target, thisArg, argumentsList) {
+                console.log("called: " + argumentsList.join(", "));
+                return argumentsList[0] + argumentsList[1] + argumentsList[2];
+            },
+        });
+
+        console.log(p(1, 2, 3)); // "called: 1, 2, 3"; outputs 6
+
+
+        let test = {
+            a: 1,
+            b: 2,
+            c: 3
+        };
+        let p4 = new Proxy(test, {
+            deleteProperty: function (target, property) {
+                console.log("将要删除属性：", property)
+            }
+        });
+        delete p4.a; // 将要删除属性：a
+        console.log(test);
+        console.log(p4);
+
+        let p7 = new Proxy({}, {
+            getPrototypeOf(target) {
+                return { msg: "拦截获取对象原型操作1111111111" }
+            }
+        });
+        console.log(p7.__proto__); // {msg: '拦截获取对象原型操作'}
+    </script>
+</body>
+
+</html>
